@@ -10,6 +10,11 @@ import javax.swing.border.BevelBorder;
 
 /**
  * @author Navroz
+ * 
+ * 1 -- Any live cell with fewer than two live neighbors dies, as if by underpopulation.
+ * 2 -- Any live cell with two or three live neighbors lives on to the next generation.
+ * 3 -- Any live cell with more than three live neighbors dies, as if by overpopulation.
+ * 4 -- Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
  *
  */
 public class GameOfLifePanel extends JPanel implements Runnable {
@@ -134,14 +139,17 @@ public class GameOfLifePanel extends JPanel implements Runnable {
 		if (currentState) {
 			// cell is alive
 			if (numSurrLiveCells <= 3) {
-				nxtGenState = true;
+				if(numSurrLiveCells < 2) {
+					nxtGenState = false;		// 1 -- Any live cell with fewer than two live neighbors dies, as if by underpopulation.
+				}
+				nxtGenState = true;				// 2 -- Any live cell with two or three live neighbors lives on to the next generation.
 			} else {
-				nxtGenState = false;
+				nxtGenState = false;			// 3 -- Any live cell with more than three live neighbors dies, as if by overpopulation.
 			}
 		} else {
 			// cell is dead
-			if (numSurrLiveCells >= 3) {
-				nxtGenState = true;
+			if (numSurrLiveCells == 3) {
+				nxtGenState = true;				// 4 -- Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
 			} else {
 				nxtGenState = false;
 			}
