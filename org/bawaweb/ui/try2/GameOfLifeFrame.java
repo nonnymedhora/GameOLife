@@ -38,6 +38,7 @@ public class GameOfLifeFrame extends JFrame {
 	final JButton startPauseBtn 	= new JButton("Start >>");
 	final JButton autofillBtn 		= new JButton("AutoFill");
 	final JButton frameRtBtn		= new JButton("Rate");
+	final JButton backBtn			= new JButton("<|| Back");
 	final JButton stepPauseBtn 		= new JButton("Step ||>");
 	final JButton resetBtn 			= new JButton("Reset");
 	final JButton exitBtn 			= new JButton("Exit");
@@ -85,6 +86,14 @@ public class GameOfLifeFrame extends JFrame {
 			}	    	
 	    });
 	    
+	    this.backBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doBackCommand();
+				
+			}	    	
+	    });
+	    
 	    this.stepPauseBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -112,6 +121,7 @@ public class GameOfLifeFrame extends JFrame {
 	    this.butPanel.add(startPauseBtn);
 	    this.butPanel.add(autofillBtn);
 	    this.butPanel.add(frameRtBtn);
+	    this.butPanel.add(backBtn);
 	    this.butPanel.add(stepPauseBtn);
 	    this.butPanel.add(resetBtn);
 	    this.butPanel.add(exitBtn);
@@ -122,6 +132,13 @@ public class GameOfLifeFrame extends JFrame {
 	   	    
 		this.setVisible(true);
 		
+		
+	}
+
+	protected void doBackCommand() {
+		this.golPanel.setRunning(false);
+		this.theGame.interrupt();
+		this.golPanel.goBack();
 		
 	}
 
@@ -142,6 +159,7 @@ public class GameOfLifeFrame extends JFrame {
 	}
 
 	protected void doStepPauseCommand() {
+		
 		doStartPauseCommand();
 		this.theGame.interrupt();
 		
@@ -150,7 +168,7 @@ public class GameOfLifeFrame extends JFrame {
 	protected void doFrameRateCommand() {
 		// Put up an options panel to change the number of moves per second
         final JFrame f_options = new JFrame();
-        f_options.setTitle("Options");
+        f_options.setTitle("Generations per Second");
         f_options.setSize(300,60);
         f_options.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - f_options.getWidth())/2, 
             (Toolkit.getDefaultToolkit().getScreenSize().height - f_options.getHeight())/2);
@@ -158,7 +176,7 @@ public class GameOfLifeFrame extends JFrame {
         JPanel p_options = new JPanel();
         p_options.setOpaque(false);
         f_options.add(p_options);
-        p_options.add(new JLabel("Number of moves per second:"));
+        p_options.add(new JLabel("Generations/Second:"));
         Integer[] secondOptions = {1,2,3,4,5,10,15,20};
         final JComboBox cb_seconds = new JComboBox(secondOptions);
         p_options.add(cb_seconds);
@@ -178,7 +196,7 @@ public class GameOfLifeFrame extends JFrame {
 
 	protected void doAutoFillCommand() {
 		final JFrame f_autoFill = new JFrame();
-        f_autoFill.setTitle("Autofill");
+        f_autoFill.setTitle("Percentage of Living Cells");
         f_autoFill.setSize(360, 60);
         f_autoFill.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - f_autoFill.getWidth())/2, 
             (Toolkit.getDefaultToolkit().getScreenSize().height - f_autoFill.getHeight())/2);
@@ -186,7 +204,7 @@ public class GameOfLifeFrame extends JFrame {
         JPanel p_autoFill = new JPanel();
         p_autoFill.setOpaque(false);
         f_autoFill.add(p_autoFill);
-        p_autoFill.add(new JLabel("What percentage should be filled? "));
+        p_autoFill.add(new JLabel("Percent Live Cells? "));
         Object[] percentageOptions = {"Select",5,10,15,20,25,30,40,50,60,70,80,90,95};
         final JComboBox cb_percent = new JComboBox(percentageOptions);
         p_autoFill.add(cb_percent);
@@ -214,7 +232,7 @@ public class GameOfLifeFrame extends JFrame {
 			this.startPauseBtn.setText("Pause ||");
 		} else {
 			this.golPanel.setRunning(false);
-			this.theGame.interrupt();
+//			this.theGame.interrupt();
 			this.startPauseBtn.setText("Start |>");
 		}
 	}
