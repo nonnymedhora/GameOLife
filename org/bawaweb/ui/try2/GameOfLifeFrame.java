@@ -143,8 +143,12 @@ public class GameOfLifeFrame extends JFrame {
 	}
 
 	protected void doResetCommand() {
-//		this.golPanel = resetGame();
-//		repaint();
+		this.golPanel.setRunning(false);
+		this.theGame.interrupt();
+		this.golPanel.reset();
+		this.startPauseBtn.setText("Start |>");
+		/*this.golPanel = resetGame();
+		repaint();*/
 		
 	}
 

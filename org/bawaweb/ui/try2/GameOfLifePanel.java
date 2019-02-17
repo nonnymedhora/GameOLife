@@ -25,7 +25,7 @@ public class GameOfLifePanel extends JPanel implements Runnable {
 	private final int DIM = 10;
 	
 	private Cell[][] theCells = new Cell[DIM][DIM];
-	private List<Cell[][]> genHistory = new ArrayList<Cell[][]>();;
+	private List<Cell[][]> genHistory = new ArrayList<Cell[][]>();
 	private int percent;
 	private int frameRate;
 	
@@ -70,13 +70,40 @@ public class GameOfLifePanel extends JPanel implements Runnable {
 		}
 		this.l_Cells = liveCells;
 		this.d_Cells = deadCells;
-		genHistory.add(theCells);
-		currentGeneration = genHistory.size();
-		System.out.println("There are " + liveCells + " liveCells");
-
-		System.out.println("There are " + deadCells + " deadCells");
-		
+		this.genHistory.add(theCells);
+		currentGeneration = this.genHistory.size();
+		System.out.println("There are " + liveCells + " LIVECells and there are are " + deadCells + " DeadCells");		
 		System.out.println("Total " + (liveCells + deadCells));
+		System.out.println("Current generation is " + currentGeneration);
+	}
+	
+	public void reset() {
+		this.genHistory = new ArrayList<Cell[][]>();
+		for(int r = 0; r < DIM; r++) {
+			for (int c = 0; c < DIM; c++) {
+				if ( Math.random() * 100 <= this.percent) {
+					theCells[r][c] = new Cell(r, c, "alive");
+					theCells[r][c].setStatus(true);
+				} else {
+					theCells[r][c] = new Cell(r, c, "dead");
+					theCells[r][c].setStatus(false);
+				}
+			}
+		}
+
+		this.genHistory.add(theCells);
+		/*
+//		this.randomlyFillupCells(this.percent);
+		
+		Cell[][] newCells = this.genHistory.get(0);
+
+		for (int i = 0; i < DIM; i++) {
+			for (int j = 0; j < DIM; j++) {
+				boolean status = newCells[i][j].isAlive();
+				theCells[i][j].setStatus(status);
+			}
+		}*/
+		repaint();
 	}
 
 	public void paintComponent(Graphics g) {
@@ -93,7 +120,7 @@ public class GameOfLifePanel extends JPanel implements Runnable {
 		int dead = 0;
 		
 		if (running) {
-			if(currentGeneration == genHistory.size()) {
+			if(currentGeneration == this.genHistory.size()) {
 				boolean[][] nxtGenStatusArr = new boolean[DIM][DIM];
 				Cell[][] nxtGenCells = new Cell[DIM][DIM];
 				for (int r = 0; r < DIM; r++) {
@@ -125,10 +152,8 @@ public class GameOfLifePanel extends JPanel implements Runnable {
 					}
 				}
 				
-				// add 2 History
-				//@TODO
-				genHistory.add(nxtGenCells);
-				currentGeneration = genHistory.size();
+				this.genHistory.add(nxtGenCells);
+				currentGeneration = this.genHistory.size();
 				System.out.println("Processed generations == " + currentGeneration);
 				this.l_Cells = living;
 				this.d_Cells = dead;
@@ -136,7 +161,7 @@ public class GameOfLifePanel extends JPanel implements Runnable {
 			
 			} else {
 				int nxtGen = currentGeneration+1;
-				Cell[][] cells2Display = nxtGen < genHistory.size() ? genHistory.get(nxtGen) : null;
+				Cell[][] cells2Display = nxtGen < this.genHistory.size() ? this.genHistory.get(nxtGen) : null;
 				if (cells2Display != null) {
 					//swap the generations
 					for (int i = 0; i < DIM; i++) {
@@ -150,12 +175,12 @@ public class GameOfLifePanel extends JPanel implements Runnable {
 				}
 			}//
 				
-				try {
-					Thread.sleep(frameRate);
-	//				repaint();
-					run();
-				} catch (InterruptedException ex) {
-				} 
+			try {
+				Thread.sleep(frameRate);
+//				repaint();
+				run();
+			} catch (InterruptedException ex) {
+			} 
 		}
 
 	}
@@ -173,15 +198,15 @@ public class GameOfLifePanel extends JPanel implements Runnable {
 		int colMax = cellCol + 1 >= DIM ? cellCol : cellCol + 1;
 		
 		int numSurrLiveCells = 0;
-		int numSurrDeadCells = 0;
+//		int numSurrDeadCells = 0;
 		
 		for (int r = rowMin; r <= rowMax; r++) {
 			for(int c = colMin; c <= colMax; c++) {
 				if ( this.theCells[r][c].isAlive()) {
 					numSurrLiveCells++;
-				} else {
+				}/* else {
 					numSurrDeadCells++;
-				}
+				}*/
 			}
 		}
 		
@@ -211,12 +236,12 @@ public class GameOfLifePanel extends JPanel implements Runnable {
 
 
 	public void goBack() {
-		int prvGen = currentGeneration - 1; 
-		Cell[][] lastGenCells = prvGen < 0 ? null : genHistory.get(prvGen);
+		int prvGen = currentGeneration - 1 <= 0 ? 0 : currentGeneration - 1; 
+		Cell[][] lastGenCells = prvGen != 0 ? this.genHistory.get(prvGen-1) : this.genHistory.get(0);
 		int living = 0;
 		int dead = 0;
 		if (lastGenCells != null) {
-			//swap the generations
+			
 			for (int i = 0; i < DIM; i++) {
 				for (int j = 0; j < DIM; j++) {
 					boolean status = lastGenCells[i][j].isAlive();
@@ -227,7 +252,7 @@ public class GameOfLifePanel extends JPanel implements Runnable {
 					theCells[i][j].setStatus(status);
 				}
 			}
-			System.out.println("Displaying generation " + prvGen);
+			System.out.println("Displaying generation " + ((prvGen != 0) ? prvGen : 1));
 			System.out.println("There are " + living + " LIVING cells and " + dead + " dead cells");
 			currentGeneration = prvGen;
 			repaint();
